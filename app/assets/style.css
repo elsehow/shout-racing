@@ -3,6 +3,8 @@
 	height:100px;
 }
 
-.reading {
-	margin: 0  auto;
+.car {
+	width: 20px;
+	height: 40px;
+	position: absolute;
 }

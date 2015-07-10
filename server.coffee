@@ -45,15 +45,40 @@ pusherClient = new PusherClient
 
 client = request.createClient 'http://indra.webfactional.com/' 
 handlePostErrors = (err, res, body) -> if err then console.log 'err!', err
-postReading = (r) -> client.post '/', r, handlePostErrors
+publish = (r) -> client.post '/', r, handlePostErrors
+
+cars = {}
+moveCar = (color, amplitude) ->
+    car = cars[color] 
+    if not car
+        cars[color] = {color: color, position: 0}
+    if car
+        car.position += amplitude/10
+        cars[color] = car
+    return cars[color]
+
+checkForWinner = (car) ->
+    # if the max car position > 1000, we have a winner!
+    furthestCar = _.max cars, 'position'
+    if furthestCar.position > 100 then return furthestCar
+    return null
+
+game = 'on'
 # listen for microphone amplitude data
 pusherClient.on 'connect', () ->
     sub = pusherClient.subscribe 'everything'
     # whenever a microphone amplitude comes in,
-    # send it to everyone
-    sub.on 'microphoneAmplitude', (d) ->
-        d.type = 'carDelta'
-        postReading d
+    # compute the car's position + send it back out as carPosition
+    sub.on 'racerMicAmp', (d) ->
+        if game is 'on'
+            cars[d.color] = moveCar d.color, d.amplitude 
+            publish _.extend cars, {type: 'carPosition'}
+            # check for a winner
+            winner = checkForWinner cars
+            if winner 
+                publish { type:'winner', winner: winner }
+                cars = {}
+                game = 'over'
 
 # connect to pusher
 pusherClient.connect()

@@ -41,6 +41,7 @@
     "jquery": "^2.1.3",
     "kefir": "^2.7.0",
     "lodash": "^3.8.0",
+    "map-range": "^0.1.2",
     "post-json-nicely": "^0.1.2",
     "pusher-client": "^0.2.3",
     "pusher-js": "^3.0.0",

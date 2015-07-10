@@ -2,7 +2,7 @@ $ = require 'jquery'
 docReady = require 'doc-ready'
 audioContext = require 'audio-context'
 microphoneManager = require './modules/MicrophoneManager/index.coffee'
-getCarDeltaStream = require './modules/CarDeltaStream.coffee'
+eventStream = require './modules/EventStream.coffee'
 publish = require './modules/ShareData.coffee'
 # views
 joinConvoView = require './views/JoinConvoView.coffee'
@@ -20,8 +20,9 @@ init = ->
 		# the cb is executed when user selects a color + hits join
 		joinConvoView (color) => 
 			publish(color, amplitudesStream)
-			carDeltaStream = getCarDeltaStream()
-			raceViz(loudestMicStream)
+			carPosStream = eventStream 'carPosition'
+			winnerStream = eventStream 'winner'
+			raceViz(carPosStream, winnerStream)
 		
 	return 0
 
